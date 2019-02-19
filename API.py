@@ -170,7 +170,7 @@ def get_paragraphs_id(books=None, is_analysed=True, sents_num=None, words_num=No
         vec = np.zeros(shape=book_id.shape, dtype=bool)
         for bk in books:
             vec = np.logical_or(vec, book_id == bk)
-        metadata = metadata[:, vec]
+        metadata = metadata[vec]
 
     vec = metadata[:, keys["is_analysed"]]
     if not is_analysed:
