@@ -5,10 +5,12 @@ import numpy as np
 
 def get_books_metadata(books_id=None):
     """
+
     Args:
         books_id: A list of integers, if it is not None, then it will return metadata of only these ids
     Returns:
         metadata of books. with format dictionary book_id: book_metadata. each metadata is a dictionary.
+
     """
     with open(HP.BOOKS_METADATA, 'r') as f:
         metadata = json.load(f)
@@ -23,8 +25,10 @@ def get_books(author=None, language=None, bookshelf=None, has_text=True):
     """
     get books with specified features. authors, language and bookshelf could be str or a list of str.
     if has_text is True then return only books which have text
+
     Returns:
         a list of integers (book_id)
+
     """
     with open(HP.FEATURES_METADATA, 'r') as f:
         features_metadata = json.load(f)
@@ -82,8 +86,10 @@ def get_books_text(books=None):
     """
     Args:
         books: list of gutenberg book_id (int)
+
     Returns:
         a dictionary: {book_id: book_text}
+
     """
     if books is None:
         books = get_books(has_text=True)
@@ -97,6 +103,7 @@ def get_books_text(books=None):
 
 def get_features():
     """
+
     get books metadata features
     """
     with open(HP.FEATURES_METADATA, 'r') as f:
@@ -106,17 +113,22 @@ def get_features():
 
 def get_keys():
     """
+
     get keys of paragraph metadata for each column
     a dictionary {key_name: column_number}
+
     """
     return dict(zip(HP.keys, range(len(HP.keys))))
 
 def get_paragraphs_metadata(par_ids = None):
     """
+
     get paragraphs metadata. metadata is a numpy array of shape [paragraphs_num, paragraphs_keys]
     you can get keys of each column with get_keys()
+
     Args:
          par_ids: a list of paragraph global_ids. if it is not specified then it returns whole metadata
+
     """
     metadata = np.load(HP.PARAGRAPH_METADATA)
     if par_ids is not None:
@@ -128,7 +140,9 @@ def get_paragraphs_metadata(par_ids = None):
 def get_paragraphs_id(books=None, is_analysed=True, sents_num=None, words_num=None,
                       tokens_num=None, has_dialogue=None, whole_dialogue=None, output_local_id=True):
     """
+
     Returns all paragraphs with specified features.
+
     Args:
         book: a list of integers. if it is specified returned paragraphs are only in these books.
         is_analysed: if it is true then returned pre-analysed books. some paragraphs are not analysed (do not
@@ -145,20 +159,18 @@ def get_paragraphs_id(books=None, is_analysed=True, sents_num=None, words_num=No
         Returns:
             if output_local_id is True the output will be a dictionary of {book_id: [list of paragraphs local_id]}
             and if it is false the output will be a list of paragraphs global id.
+
+
     """
     metadata = np.load(HP.PARAGRAPH_METADATA)
     keys = get_keys()
 
     if books is not None:
-        vec = metadata[:, keys["book_id"]]
-        vec = np.expand_dims(vec, 1)
-        bks = np.array(books, dtype=np.int32)
-        if bks.ndim != 1:
-            raise AttributeError("books must be a list of integers")
-        vec = vec == bks
-        vec = np.any(vec, 1)
-        metadata = metadata[vec]
-        bks = None
+        book_id = metadata[:, keys["book_id"]]
+        vec = np.zeros(shape=book_id.shape, dtype=bool)
+        for bk in books:
+            vec = np.logical_or(vec, book_id == bk)
+        metadata = metadata[:, vec]
 
     vec = metadata[:, keys["is_analysed"]]
     if not is_analysed:
@@ -273,10 +285,13 @@ def get_global_ids(local_id):
 def get_paragraphs_ids_n(n, books=None, is_analysed=True, sents_num=None, words_num=None,
                          tokens_num=None, has_dialogue=None, whole_dialogue=None):
     """
+
     It is like get_paragraphs_ids exept that in n > 1 it returns sequential paragraphs with length n which all
     paragraphs have same features.
+
     Returns:
          unlike get_paragraphs_ids it only returns local_id format
+
     """
     assert n >= 1
     local_pars = get_paragraphs_id(books=books, is_analysed=is_analysed, sents_num=sents_num,
@@ -297,8 +312,10 @@ def get_paragraphs_ids_n(n, books=None, is_analysed=True, sents_num=None, words_
 
 def get_local_global_dict(books=None):
     """
+
     It provides a dictionary of changing local ids to global ids for paragraphs:
         result[book_id][local_id] = global_id
+
     """
     if books is None:
         books = get_books()
@@ -315,8 +332,10 @@ def get_local_global_dict(books=None):
 
 def get_global_local_dict(pars=None):
     """
+
     Returns a dictionary for changing global ids to local ids:
         result[global_id] = (local_id, book_id)
+
     """
     metadata = get_paragraphs_metadata()
     keys = get_keys()
@@ -330,12 +349,15 @@ def get_global_local_dict(pars=None):
 
 def get_paragraph_text(local_ids, num_sequential=1):
     """
+
     provide text of paragraphs. input format should be in the format of local_ids ({book_id: [list of local_ids]})
     but it can be sequential. (num_sequential > 1)
+
     Returns:
         1st: paragraphs text in the format of dictionary: {global_id: text}
         2nd: local_global dictionary: a dictioray which changes local_ids to global_ids:
              result[book_id][local_id] = global_id
+
     """
     paragraphs = list()
     local_global = get_local_global_dict(list(local_ids))
@@ -352,3 +374,37 @@ def get_paragraph_text(local_ids, num_sequential=1):
         paragraphs = paragraphs + [(met[p], text[p]) for p in pps]
     paragraphs = dict(paragraphs)
     return paragraphs, local_global
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
