@@ -20,18 +20,20 @@ def data_creator(prediction_data_set_path, multi_choice_data_set_path, paragraph
     multi_choice_data_set.write("forth_choice\t")
     multi_choice_data_set.write("index_of_correct_choice\n")
 
+
     def add_to_prediction_data_set(book_id, glob_id, temp_tokenized):
         prediction_data_set.write(str(book_id) + "\t")
         prediction_data_set.write(str(glob_id) + "\t")
         for sent in temp_tokenized[:-1]:
-            prediction_data_set.write(sent.replace("\n", " ").replace("\t", " ") + " ")
-        prediction_data_set.write("\t" + temp_tokenized[-1].replace("\n", " ").replace("\t", " ") + "\n")
+            prediction_data_set.write(sent.replace("\n", " ") + " ")
+        prediction_data_set.write("\t" + temp_tokenized[-1].replace("\n", " ") + "\n")
+
 
     def add_to_multi_choice_data_set(book_id, glob_id, temp_tokenized, c, p):
         multi_choice_data_set.write(str(book_id) + "\t")
         multi_choice_data_set.write(str(glob_id) + "\t")
         for sent in temp_tokenized[:-1]:
-            multi_choice_data_set.write(sent.replace("\n", " ").replace("\t", " ") + " ")
+            multi_choice_data_set.write(sent.replace("\n", " ") + " ")
 
         multi_choice_data_set.write("\t")
 
@@ -39,9 +41,10 @@ def data_creator(prediction_data_set_path, multi_choice_data_set_path, paragraph
         c[p], c[-1] = c[-1], c[p]
 
         for sent in c:
-            multi_choice_data_set.write(sent.replace("\n", " ").replace("\t", " ") + "\t")
+            multi_choice_data_set.write(sent.replace("\n", " ") + "\t")
 
         multi_choice_data_set.write(str(p) + "\n")
+
 
     def get_random(i, last_sents):
         r1 = rand.randint(0, len(last_sents) - 1)
@@ -59,6 +62,7 @@ def data_creator(prediction_data_set_path, multi_choice_data_set_path, paragraph
         p = rand.randint(0, 3)
 
         return [last_sents[r1], last_sents[r2], last_sents[r3]], p
+
 
     for id, pars in paragraphs_local_id.items():
         temp_dict = {id: pars}
